@@ -1,0 +1,23 @@
+{
+  "outDir": "~/Downloads/img/",
+  "targets": [
+    {
+      "name": "Aikyan",
+      "sites": [
+        {
+          "url": "https://lineblog.me/kobayashi_aika/",
+          "type": "lineblog"
+        }
+      ]
+    },
+    {
+      "name": "Anju",
+      "sites": [
+        {
+          "url": "https://lineblog.me/anju_inami/",
+          "type": "lineblog"
+        }
+      ]
+    }
+  ]
+}

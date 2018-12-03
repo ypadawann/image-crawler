@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+    "target": "es2017",
+    "module": "CommonJS",
+		"outDir": "./dist/"		
+	},
+	"include": [
+		"src/typescript/**/*.ts"
+	]
+}
