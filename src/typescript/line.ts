@@ -3,16 +3,21 @@ import {By} from 'selenium-webdriver';
 import {Helper} from './helper';
 
 export class LineImageCrawler {
+  site_config: any;
 	top_url: string;
 	page_num: number;
   dir_path: string;
-	constructor(top_url: string, dir_path: string = 'img') {
-		this.top_url = top_url;
+  latest_image: string = null;
+  constructor(site_config: any, dir_path: string) {
+    this.site_config = site_config;
     this.page_num = 1;
     this.dir_path = dir_path;
-    console.log('top_url: ', top_url);
-    console.log('dir_path: ', dir_path);
+    console.log('dir_path: ', this.dir_path);
 	}
+
+  get_latest_image_url(): string {
+    return this.latest_image;
+  }
 
 	getImages(driver: any): Promise<any> {
 		return this.getImagesFromPage(driver);
@@ -22,7 +27,7 @@ export class LineImageCrawler {
 		console.log('getImagesFromPage', this.page_num);
 		const _this = this;
 		let elements = [];
-		const url = this.top_url + '?p=' + _this.page_num;
+		const url = _this.site_config.url + '?p=' + _this.page_num;
 		return driver.get(url).then(function(){
 			console.log('get', url);
 			return driver.findElement(By.id("content"));
@@ -55,6 +60,10 @@ export class LineImageCrawler {
     }).then(function(url){
       if(url != null) {
         console.log(url);
+        if(_this.latest_image == null ) _this.latest_image = url;
+        if( _this.site_config.latest_image ) {
+          if( _this.site_config.latest_image === url ) return;
+        }
         Helper.wget(url, _this.dir_path);
       }
       return _this.getImageFromElement(elements, index+1);

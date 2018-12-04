@@ -10,40 +10,46 @@ declare var process: any;
 
 class CrawlerCtrl {
   private driver_ctrl: DriverCtrl;
+  private person_index = 0;
+  private site_index = 0;
 
   start() {
     this.driver_ctrl = new DriverCtrl(Config.is_headless);
-    const target_arr = Config.get_targets();
-    this.crawlPerson(target_arr, 0);
+    this.crawlPerson().then(function(){
+      console.log(Config.get_config_obj());
+      Config.save_config();
+    });
   }
 
-  crawlPerson(person_arr: any, index: number = 0): Promise<any> {
+  crawlPerson(): Promise<any> {
     let _this = this;
-    if( person_arr.length <= index ) return;
-    let person_obj = person_arr[index];
-    console.log(person_obj);
-    const name = person_obj.name;
-    return _this.crawlSite(person_obj.sites, 0, name).then(function(){
-      return _this.crawlPerson(person_arr, index+1);
+    if( Config.get_person_num() <= _this.person_index ) return;
+    _this.site_index = 0;
+    return _this.crawlSite().then(function(){
+      _this.person_index++;
+      return _this.crawlPerson();
     });
   }
 
 
-  crawlSite(site_arr: any, index: number, name: string = ''): Promise<any> {
+  crawlSite(): Promise<any> {
     let _this = this;
-    if( site_arr.length <= index ) return;
-    const site_obj = site_arr[index];
-    const site_type = site_obj['type'];
-    const url = site_obj.url;
+    if( Config.get_site_num(_this.person_index) <= _this.site_index ) return;
+    //const site_obj = site_arr[index];
+    const name = Config.get_config_obj().targets[_this.person_index].name;
+    const site_config = Config.get_site_config(_this.person_index, _this.site_index);
+    const url = site_config.url;
     let cls = null;
-    switch ( site_obj['type'] ) {
+    switch ( site_config['type'] ) {
       case 'lineblog':
-        cls = new LineImageCrawler(url, Config.get_out_dir_path()+name+'/lineblog');
+        cls = new LineImageCrawler(site_config, Config.get_out_dir_path()+name+'/lineblog');
       default:
     }
     if(cls == null) return;
     return cls.getImages(_this.driver_ctrl.get_driver()).then(function(){
-      return _this.crawlSite(site_arr, index+1);
+      Config.update_latest_image(cls.get_latest_image_url(), _this.person_index, _this.site_index);
+      _this.site_index++;
+      return _this.crawlSite();
     }).then(function(){
       cls = null;
       return;

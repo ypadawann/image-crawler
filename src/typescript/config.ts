@@ -27,6 +27,10 @@ export class Config {
     }
   }
 
+  public static save_config() {
+    Helper.fswrite_sync(Config.config_file_path, JSON.stringify(Config.config_obj));
+  }
+
   public static read_command_options() {
     for( let i = 2; i < process.argv.length; i++ ) {
       if (process.argv[i] == '--headless') Config.browser_headless = true;
@@ -34,7 +38,7 @@ export class Config {
   }
 
   public static get_config_obj(): any{
-    return Config.config_obj;
+    return Helper.copy_object(Config.config_obj);
   }
 
   public static get_out_dir_path(): string {
@@ -42,7 +46,28 @@ export class Config {
   }
 
   public static get_targets(): any {
-    return Config.config_obj.targets;
+    return Helper.copy_object(Config.config_obj.targets);
+  }
+
+  public static get_site_config(person_index: number, site_index: number): any {
+    return Helper.copy_object(Config.config_obj.targets[person_index].sites[site_index]);
+  }
+
+  public static get_person_num(): number {
+    return Config.config_obj.targets.length;
+  }
+
+  public static get_site_num(person_index: number): number {
+    return Config.config_obj.targets[person_index].sites.length;
+  }
+
+  public static update_latest_image(url: string, person_index: number, site_index: number) {
+    console.log('update_latest_image', url);
+    Config.config_obj.targets[person_index].sites[site_index].latest_image = url;
+  }
+
+  public static get_latest_image(person_index: number, site_index: number ) {
+    return Config.config_obj.targets[person_index].sites[site_index].latest_image;
   }
 
   public static is_headless(): any {

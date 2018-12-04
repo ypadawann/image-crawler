@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-		"gulp": "gulp"
+    "gulp": "gulp"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +16,8 @@
     "gulp-typescript": "^4.0.2",
     "selenium-webdriver": "^3.6.0",
     "typescript": "^3.2.1"
+  },
+  "devDependencies": {
+    "chromedriver": "^2.44.1"
   }
 }

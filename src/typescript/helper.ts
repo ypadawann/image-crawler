@@ -20,4 +20,12 @@ export class Helper {
   public static fsread_sync(path: string, encoding: string = 'utf8'): string {
     return fs.readFileSync(path, {encoding: encoding, flag: 'r'});
   }
+
+  public static fswrite_sync(path: string, data: any, encoding: string = 'utf8') {
+    fs.writeFileSync(path, data, {encoding: encoding});
+  }
+
+  public static copy_object(obj: any): any {
+    return JSON.parse(JSON.stringify(obj));
+  }
 }
