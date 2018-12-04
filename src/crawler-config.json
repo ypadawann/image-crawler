@@ -1,5 +1,5 @@
 {
-  "outDir": "Downloads/img/",
+  "outDir": "tmp/img/",
   "targets": [
     {
       "name": "Aikyan",

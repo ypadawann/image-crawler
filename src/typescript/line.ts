@@ -1,31 +1,18 @@
 import {By} from 'selenium-webdriver';
 
 import {Helper} from './helper';
+import {SiteCrawler} from './site';
 
-export class LineImageCrawler {
-  site_config: any;
-	top_url: string;
-	page_num: number;
-  dir_path: string;
-  latest_image: string = null;
+export class LineImageCrawler extends SiteCrawler{
+
   constructor(site_config: any, dir_path: string) {
-    this.site_config = site_config;
-    this.page_num = 1;
-    this.dir_path = dir_path;
-    console.log('dir_path: ', this.dir_path);
-	}
-
-  get_latest_image_url(): string {
-    return this.latest_image;
-  }
-
-	getImages(driver: any): Promise<any> {
-		return this.getImagesFromPage(driver);
+    super(site_config, dir_path);
 	}
 
 	getImagesFromPage(driver: any): Promise<any> {
 		console.log('getImagesFromPage', this.page_num);
 		const _this = this;
+    if(14 <= _this.page_num) return;
 		let elements = [];
 		const url = _this.site_config.url + '?p=' + _this.page_num;
 		return driver.get(url).then(function(){
@@ -41,6 +28,7 @@ export class LineImageCrawler {
 		}).then(function(){
 			return _this.getImageFromElement(elements, 0);
 		}).then(function(){
+      if( _this.is_finished ) return;
 			_this.page_num ++;
 			return _this.getImagesFromPage(driver);
 		}).catch(function(err){
@@ -58,14 +46,8 @@ export class LineImageCrawler {
       if(class_string.split(' ').includes('lineemoji')) return;
       return _this.getUrlFromElement(elements[index]);
     }).then(function(url){
-      if(url != null) {
-        console.log(url);
-        if(_this.latest_image == null ) _this.latest_image = url;
-        if( _this.site_config.latest_image ) {
-          if( _this.site_config.latest_image === url ) return;
-        }
-        Helper.wget(url, _this.dir_path);
-      }
+      _this.handle_image_url(url);
+      if( _this.is_finished ) return;
       return _this.getImageFromElement(elements, index+1);
     }).catch(function(err){
 			console.error(err);
